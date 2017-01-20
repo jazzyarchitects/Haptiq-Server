@@ -12,6 +12,14 @@ module.exports = function(app){
 
 
   let moduleDirectory = path.join(__dirname, '..', "./modules");
+
+  if(!fs.existsSync(moduleDirectory)){
+    app.all('/', (req, res, next)=>{
+      res.send("Hello...!!! Kindly check with Pheonix team for instructions on how to use this website");
+    });
+    return;
+  }
+
   fs.readdirSync(moduleDirectory).forEach(function(model){
     let routesPath = path.join(moduleDirectory, model, 'routes.js');
     let stats = fs.statSync(path.join(moduleDirectory, model));

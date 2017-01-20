@@ -7,6 +7,9 @@ let walk = function (moduleDirectory, walkDirectory, callback) {
   if (!callback) {
     callback = requireFromModule;
   }
+  if(!fs.existsSync(moduleDirectory)){
+    return;
+  }
   fs.readdirSync(moduleDirectory).forEach(function (dir) {
     let dirPath = path.join(moduleDirectory, dir);
     let dirStat = fs.statSync(dirPath);
