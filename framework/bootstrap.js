@@ -35,9 +35,9 @@ module.exports = function (config) {
     Log.hr();
 
 
-    connectDb();
+    // connectDb();
     setGlobals();
-    bootstrapModels();
+    // bootstrapModels();
     bootstrapRoutes();
 
     //Connect to the database with given db url and options
@@ -76,14 +76,14 @@ module.exports = function (config) {
     }
 
 
-    function setupFirebase(){
-        admin.initializeApp({
-            credential: admin.credential.cert(fireBaseConfig),
-            database: "https://haptiq-e8186.firebaseio.com"
-        });
-    }
+    // function setupFirebase(){
+    //     admin.initializeApp({
+    //         credential: admin.credential.cert(fireBaseConfig),
+    //         database: "https://haptiq-e8186.firebaseio.com"
+    //     });
+    // }
 
-    setupFirebase();
+    // setupFirebase();
 
 
     function processRoutes(dir) {

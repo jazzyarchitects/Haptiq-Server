@@ -54,15 +54,15 @@ let errorJSON = function (errorCode, description, message) {
 };
 
 let printRoutes = function (router, outputFileName, isNotApi) {
-  if (!fs.existsSync(path.join(process.cwd(), "tmp"))) {
-    fs.mkdir(path.join(process.cwd(), "tmp"));
-  }
-  if (!fs.existsSync(path.join(process.cwd(), "tmp", "routes"))) {
-    fs.mkdir(path.join(process.cwd(), "tmp", "routes"));
-  }
-  if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
-    fs.writeFileSync(path.join(__dirname, '..', 'tmp', 'routes', ((isNotApi ? '' : 'api-') + (outputFileName || 'routes.json'))), JSON.stringify(router.stack), 'utf-8')
-  };
+  // if (!fs.existsSync(path.join(process.cwd(), "tmp"))) {
+  //   fs.mkdir(path.join(process.cwd(), "tmp"));
+  // }
+  // if (!fs.existsSync(path.join(process.cwd(), "tmp", "routes"))) {
+  //   fs.mkdir(path.join(process.cwd(), "tmp", "routes"));
+  // }
+  // if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
+  //   fs.writeFileSync(path.join(__dirname, '..', 'tmp', 'routes', ((isNotApi ? '' : 'api-') + (outputFileName || 'routes.json'))), JSON.stringify(router.stack), 'utf-8')
+  // };
 };
 
 exports.walk = walk;
