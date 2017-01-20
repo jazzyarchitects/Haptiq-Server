@@ -21,7 +21,7 @@
         jwt: "KC-)&DpEH@e9y6s109!d4VpTCo_V8N"
     },
     firebase: {
-        apiKey: "",
-        senderId: ""
+        apiKey: "AAAAIp9DcdA:APA91bEmSer9HJEADyJqkiTfaeKmzn-kz5ydk08wy8MGjSoBbKZJrBoqE-Dxf9-07jt4YH_0zIPzJfFarUnXxta9pGAi4yxPKlNPtCdqocd7QZHDKttIyyFJrtUTCbJ5tNsCXR5NSzUV",
+        senderId: "148700885456"
     }
  };

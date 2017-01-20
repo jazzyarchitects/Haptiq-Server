@@ -9,6 +9,9 @@ const Log = require('jlogger');
 
 const moduleDir = path.join(__dirname, '..', 'modules');
 
+const admin = require('firebase-admin');
+const fireBaseConfig = require(path.join(__dirname, '..', 'config', 'firebase'));
+
 global.requireFromModule = utils.requireFromModule;
 global.successJSON = utils.successJSON;
 global.errorJSON = utils.errorJSON;
@@ -71,6 +74,16 @@ module.exports = function (config) {
             }
         });
     }
+
+
+    function setupFirebase(){
+        admin.initializeApp({
+            credential: admin.credential.cert(fireBaseConfig),
+            database: "https://haptiq-e8186.firebaseio.com"
+        });
+    }
+
+    setupFirebase();
 
 
     function processRoutes(dir) {
