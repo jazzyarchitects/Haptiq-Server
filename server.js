@@ -2,25 +2,39 @@
 
 const config = require('./config');
 const chalk = require('chalk');
+const http = require('http');
+const path = require('path');
 const cluster = require('cluster');
 const chokidar = require('chokidar');
-let app;
+
+let app = undefined;
+let numWorkers = require('os').cpus().length;
+let workerCount = 0;
 
 const serverPort = config.server.port;
 
+let ipAddr = 'localhost';
+if(process.env.NODE_ENV==="production"){
+  ipAddr = 'localhost';
+}
+
 exports.start = (isTest)=>{
-  if (isTest === undefined) {
-    config.db.uri = config.db.uri + "_test";
+  if(isTest===undefined) {
+    config.db.uri = config.db.uri+"_test";
   }
   app = require('./framework/bootstrap')(config);
 
-  app.listen(serverPort, function () {
-    console.log(chalk.red.bold("Server running at port: " + serverPort));
+  let server = http.Server(app);
+  require(path.join(__dirname, "socketio"))(server);
+
+  server.listen(serverPort, ipAddr, function() {
+    console.log(chalk.red.bold("Server running at port: "+serverPort));
   });
 
-  // Master-Worker communication
-  process.on('message', function (message) {
-    if (message.command === 'shutdown' && message.from === 'master') {
+
+
+  process.on('message', function(message) {
+    if(message.command === 'shutdown' && message.from === 'master') {
       process.exit(0);
     }
   });
@@ -30,6 +44,7 @@ exports.close = ()=> {
   app.close();
 };
 
+
 process.on('unhandledRejection', (reason, p) => {
   console.log(chalk.red("Unhandled Rejection at: Promise "), p, chalk.red(" reason: "), chalk.red(reason));
 });
@@ -38,110 +53,80 @@ process.on('unhandledException', (error, m)=> {
   console.log(chalk.red("Unhandled Exception at: Error "), m, chalk.red(" reason: "), chalk.red(error));
 })
 
-/* --------------------------------------------------------CRITICAL SECTION----------------------------------------------------------------- */
-
-/**
-* Following section creates worker processess to enable load balancing.
-* Multiple servers allow us to update the server code without stopping the server.
-* If you do not need 100% uptime, i.e. stop the server while updating, then delete this whole section.
-*
-* If using PM2 or SLC START or some other process manager, delete this section to prevent multiple spawning of master cluster.
-*
-* Cheers
-**/
-
-let numWorkers = require('os').cpus().length;
-let workerCount = 0;
-
-// Function to create workers at an interval of 2 seconds to avoid overlapping of File IO functions causing bugs
-function createWorkers () {
-  if (workerCount <= 0) {
+function createWorkers() {
+  if(workerCount<=0) {
     return;
-  } else {
+  }else{
     cluster.fork();
     workerCount--;
-    setTimeout(createWorkers, 2 * 1000);
+    setTimeout(createWorkers, 2*1000);
   }
 }
 
-if (cluster.isMaster) {
+if(cluster.isMaster && (process.env.NODE_ENV==="production" || process.argv.indexOf("--force-cluster")!==-1)) {
   // Watcher for no downtime updatation
   chokidar.watch('.', {
-    // ignored: ['tmp/*', 'node_modules/*'],       //Uncomment this line and comment the next line if ENOSPC error still persists after changing watch limit
     ignored: ['tmp/*', 'public/*'],
     persistent: true,
     ignoreInitial: true,
     cwd: '.',
     depth: 99,
-    interval: 100
+    interval: 10000
   }).on('all', restartWorkers);
 
-  // Get number of CPUs
-  let numWorkers = require('os').cpus().length;
 
-  // We require atleast 2 worker threads to ensure no downtime
-  if (numWorkers === 1) {
+  if(numWorkers === 1) {
     numWorkers *= 2;
   }
 
-  console.log(chalk.yellow("Master setting up " + numWorkers + " workers"));
-
-  // Create worker threads (New code will be applied when forking);
+  console.log(chalk.yellow("Master setting up "+numWorkers+" workers"));
   workerCount = numWorkers;
 
   createWorkers();
 
   cluster.on('online', (worker)=>{
-    console.log(chalk.magenta("Worker thread: " + worker.process.pid + " is online"));
+    console.log(chalk.magenta("Worker thread: "+worker.process.pid+" is online"));
   });
-
-  // This ensure app restarts if it crashes
   cluster.on('exit', (worker, code, signal)=>{
-    console.log(chalk.red('Worker thread: ' + worker.process.pid + " is exiting"));
+    console.log(chalk.red('Worker thread: '+worker.process.pid+" is exiting"));
     cluster.fork();
   });
-} else {
+}else{
   exports.start(false);
 }
 
-let appRestarting = false;
 let workerIds = [];
-/**
-* Following section stops the threads one by one at 5s intervals for a fail safe mechanism to ensure that atleast one worker is always running
-**/
-function restartWorkers (event, path) {
-  /* ------Fix for the issue of respawning the threads for every file that has been updated ------- */
-  if (appRestarting) {
+let appRestarting = false;
+
+function restartWorkers(event, path) {
+  if(appRestarting) {
     return;
   }
-  appRestarting = true;
-
-  setTimeout(()=>{
-    appRestarting = false;
-  }, numWorkers * 1000 * 5);
-  /* ------------ End of Fix ------------------- */
-
-  for (let wid in cluster.workers) {
+  for(let wid in cluster.workers) {
     workerIds.push(wid)
   }
+  appRestarting = true;
+  setTimeout(()=>{
+    appRestarting = false;
+  }, numWorkers*1000*5);
   stopWorker();
 }
 
-function stopWorker () {
-  if (workerIds.length <= 0) {
+function stopWorker() {
+  if(workerIds.length<=0) {
     return;
   }
-  if (Object.keys(cluster.workers).length > 0) {
+  if(Object.keys(cluster.workers).length>0) {
     let wid = workerIds.pop();
     cluster.workers[wid].send({
       command: 'shutdown',
       from: 'master'
     });
     setTimeout(()=>{
-      if (cluster.workers[wid]) {
+      if(cluster.workers[wid]) {
         cluster.workers[wid].process.kill('SIGKILL');
       }
-    }, 20 * 1000);
+    }, 20*1000);
   }
-  setTimeout(stopWorker, 5 * 1000);
+  setTimeout(stopWorker, 5*1000);
 }
