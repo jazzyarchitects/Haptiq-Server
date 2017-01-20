@@ -27,7 +27,7 @@ exports.start = (isTest)=>{
   let server = http.Server(app);
   require(path.join(__dirname, "socketio"))(server);
 
-  server.listen(serverPort, ipAddr, function() {
+  server.listen(serverPort, function() {
     console.log(chalk.red.bold("Server running at port: "+serverPort));
   });
 
