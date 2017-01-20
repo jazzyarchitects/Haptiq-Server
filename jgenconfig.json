@@ -1,0 +1,15 @@
+{
+  "database": {
+    "development": "Hackfest",
+    "test": "Hackfest",
+    "staging": "Hackfest",
+    "production": "Hackfest"
+  },
+  "jwtsecret": {
+    "development": "$*3cc!2BT=rMbOqB$B8M",
+    "test": "a)DKEv7(FRLUw&Cd4uk7",
+    "staging": "~7)EL%SLG(n6%xnRB8Ll^3iKBklrHT",
+    "production": "KC-)&DpEH@e9y6s109!d4VpTCo_V8N"
+  },
+  "apiAuthentication": false
+}
