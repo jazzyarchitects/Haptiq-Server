@@ -40,3 +40,5 @@ if(require.main === module){
   sendMessage();
 
 }
+
+exports.sendMessage = sendMessage;
