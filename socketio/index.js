@@ -31,7 +31,7 @@ const firebase = require(path.join(__dirname, '..', 'framework', 'firebase'));
 module.exports = function (server) {
   var io = require('socket.io')(server);
   io.set('origins', '*:*');
-  io.sockets.on('connection', function (socket) {
+  io.on('connection', function (socket) {
     setSockets(io, socket);
   });
 };
