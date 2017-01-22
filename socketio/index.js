@@ -85,9 +85,9 @@ function setSockets(io, socket){
 
   socket.on('mobile-authenticated', (data)=>{
     io.in(data.chromeId).emit('mobile-authentication', {
-      __userid: data.userId,
-      __password: data.password,
-      __key: data.key
+      userid: data.userId,
+      password: data.password,
+      key: data.key
     });
   });
 
