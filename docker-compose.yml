@@ -5,11 +5,15 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    ports:
+      - "80:3000"
+      - "443:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment: 
       DOCKER: 1
       NODE_ENV: production
+      PORT: 3000
 
 
 
