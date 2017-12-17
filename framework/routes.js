@@ -1,46 +1,44 @@
-"use strict";
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const apiAuthentication = require('jgen').APIAuthentication;
 
-module.exports = function(app){
-
+module.exports = function(app) {
   let apiRouter = express.Router();
   let router = express.Router();
 
+  let moduleDirectory = path.join(__dirname, '..', './modules');
 
-  let moduleDirectory = path.join(__dirname, '..', "./modules");
-
-  if(!fs.existsSync(moduleDirectory)){
-    app.all('/', (req, res, next)=>{
-      res.send("Hello...!!! Kindly check with Pheonix team for instructions on how to use this website");
+  if (!fs.existsSync(moduleDirectory)) {
+    app.all('/', (req, res, next) => {
+      res.redirect('http://www.jibinmathews.in');
     });
     return;
   }
 
-  fs.readdirSync(moduleDirectory).forEach(function(model){
+  fs.readdirSync(moduleDirectory).forEach(function(model) {
     let routesPath = path.join(moduleDirectory, model, 'routes.js');
     let stats = fs.statSync(path.join(moduleDirectory, model));
-    if(!stats.isDirectory()){
+    if (!stats.isDirectory()) {
       return;
     }
-    if(fs.existsSync(routesPath)){
-      if(jgenConfig.apiModels.indexOf(model)!==-1){
+    if (fs.existsSync(routesPath)) {
+      if (jgenConfig.apiModels.indexOf(model) !== -1) {
         require(routesPath)(apiRouter);
-      }else{
+      } else {
         require(routesPath)(router);
       }
     }
-    let routesFolder = path.join(moduleDirectory, model, "routes");
-    if(fs.existsSync(routesFolder)){
-      fs.readdirSync(routesFolder).forEach(function(file){
+    let routesFolder = path.join(moduleDirectory, model, 'routes');
+    if (fs.existsSync(routesFolder)) {
+      fs.readdirSync(routesFolder).forEach(function(file) {
         let st = fs.statSync(path.join(routesFolder, file));
-        if(st.isFile()){
-          if(jgenConfig.apiModels.indexOf(model)!==-1){
+        if (st.isFile()) {
+          if (jgenConfig.apiModels.indexOf(model) !== -1) {
             require(path.join(routesFolder, file))(apiRouter);
-          }else{
+          } else {
             require(path.join(routesFolder, file))(router);
           }
         }
@@ -51,5 +49,7 @@ module.exports = function(app){
   app.use('/', router);
   app.use('/api', apiRouter);
 
-
-}
+  app.all('*', function(req, res) {
+    res.redirect('http://www.jibinmathews.in');
+  });
+};

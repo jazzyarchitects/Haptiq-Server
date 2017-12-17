@@ -13,5 +13,7 @@ RUN yarn
 
 COPY . /home/app/
 
+RUN mkdir -p /home/app/tmp/routes
+
 CMD node /home/app/server.js
 
