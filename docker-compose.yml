@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment: 
+      DOCKER: 1
+      NODE_ENV: production
+
+
+
