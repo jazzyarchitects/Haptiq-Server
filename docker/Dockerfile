@@ -11,9 +11,11 @@ COPY package.json yarn.lock /home/app/
 
 RUN yarn
 
+RUN npm install pm2@latest -g
+
 COPY . /home/app/
 
 RUN mkdir -p /home/app/tmp/routes
 
-CMD node /home/app/server.js
+CMD pm2 start /home/app/server.js -i 0
 
