@@ -10,7 +10,11 @@ const Log = require('jlogger');
 const moduleDir = path.join(__dirname, '..', 'modules');
 
 const admin = require('firebase-admin');
-const fireBaseConfig = require(path.join(__dirname, '..', '..', 'firebase-config'));
+let firebaseConfigPath = path.join(__dirname, '..', 'config', 'firebase.json');
+if (process.env.NODE_ENV === 'production') {
+  firebaseConfigPath = path.join(__dirname, '..', '..', 'firebase-config.json');
+}
+const fireBaseConfig = require(firebaseConfigPath);
 
 global.requireFromModule = utils.requireFromModule;
 global.successJSON = utils.successJSON;
