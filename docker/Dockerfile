@@ -11,6 +11,8 @@ COPY package.json yarn.lock /home/app/
 
 RUN yarn
 
+COPY ./firebase-config.json /home/firebase-config.json
+
 COPY . /home/app/
 
 RUN mkdir -p /home/app/tmp/routes

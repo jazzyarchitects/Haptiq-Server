@@ -9,12 +9,12 @@ const Log = require('jlogger');
 
 const moduleDir = path.join(__dirname, '..', 'modules');
 
-const admin = require('firebase-admin');
-let firebaseConfigPath = path.join(__dirname, '..', 'config', 'firebase.json');
-if (process.env.NODE_ENV === 'production') {
-  firebaseConfigPath = path.join(__dirname, '..', '..', 'firebase-config.json');
-}
-const fireBaseConfig = require(firebaseConfigPath);
+// const admin = require('firebase-admin');
+// let firebaseConfigPath = path.join(__dirname, '..', 'config', 'firebase.json');
+// if (process.env.NODE_ENV === 'production') {
+//   firebaseConfigPath = path.join(__dirname, '..', '..', 'firebase-config.json');
+// }
+// const fireBaseConfig = require(firebaseConfigPath);
 
 global.requireFromModule = utils.requireFromModule;
 global.successJSON = utils.successJSON;
@@ -75,11 +75,12 @@ module.exports = function(config) {
     });
   }
 
-  // function setupFirebase(){
-  //     admin.initializeApp({
-  //         credential: admin.credential.cert(fireBaseConfig),
-  //         database: "https://haptiq-e8186.firebaseio.com"
-  //     });
+  // function setupFirebase() {
+  //   console.log("Firebase admin initialize app");
+  //   admin.initializeApp({
+  //     credential: admin.credential.cert(fireBaseConfig),
+  //     database: 'https://haptiq-9816a.firebaseio.com',
+  //   });
   // }
 
   // setupFirebase();
